@@ -70,44 +70,6 @@
       </article>
     </section>
 
-    <section class="panel">
-      <div class="panel-head">
-        <div>
-          <span class="section-kicker">AUDIT</span>
-          <h2>Logs</h2>
-          <p>Vollständige Systemaktivität mit serverseitigen Filtern.</p>
-        </div>
-        <button id="logsReload" class="btn ghost">↻</button>
-      </div>
-      <div class="filter-grid">
-        <select id="logAlliance"><option value="all">Alle Allianzen</option></select>
-        <select id="logCategory">
-          <option value="all">Alle Kategorien</option>
-          <option value="uploads">Uploads / Imports</option>
-          <option value="players">Spieler / Transfers</option>
-          <option value="events">Events / Settings</option>
-          <option value="violations">Verstöße / Sanktionen</option>
-          <option value="deleted">Löschungen</option>
-          <option value="accounts">Accounts</option>
-          <option value="support">Support</option>
-        </select>
-        <select id="logAction"><option value="all">Alle Aktionen</option></select>
-        <select id="logEntity"><option value="all">Alle Objekte</option></select>
-        <input id="logFrom" type="date" title="Von">
-        <input id="logTo" type="date" title="Bis">
-        <input id="logSearch" class="span-2" type="search" placeholder="Freitext in Aktion, Grund oder Details">
-        <button id="applyLogFilters" class="btn secondary">Filter anwenden</button>
-        <button id="resetLogFilters" class="btn ghost">Zurücksetzen</button>
-      </div>
-      <div id="logStatus" class="status muted"></div>
-      <div id="logList" class="log-list"></div>
-      <div class="pager">
-        <button id="logPrev" class="btn ghost">← Zurück</button>
-        <span id="logPage" class="muted"></span>
-        <button id="logNext" class="btn ghost">Weiter →</button>
-      </div>
-    </section>
-
     <details class="panel support-panel" id="supportPanel">
       <summary>
         <div>
@@ -145,6 +107,48 @@
         </div>
       </div>
     </details>
+
+    <details class="panel support-panel" id="logsPanel">
+      <summary>
+        <div>
+          <span class="section-kicker">AUDIT</span>
+          <h2>Logs</h2>
+          <p>Vollständige Systemaktivität mit serverseitigen Filtern.</p>
+        </div>
+        <button id="logsReload" class="btn ghost">↻</button>
+      </summary>
+      <div class="support-body">
+      <div class="filter-grid">
+        <select id="logAlliance"><option value="all">Alle Allianzen</option></select>
+        <select id="logCategory">
+          <option value="all">Alle Kategorien</option>
+          <option value="uploads">Uploads / Imports</option>
+          <option value="players">Spieler / Transfers</option>
+          <option value="events">Events / Settings</option>
+          <option value="violations">Verstöße / Sanktionen</option>
+          <option value="deleted">Löschungen</option>
+          <option value="accounts">Accounts</option>
+          <option value="support">Support</option>
+        </select>
+        <select id="logAction"><option value="all">Alle Aktionen</option></select>
+        <select id="logEntity"><option value="all">Alle Objekte</option></select>
+        <input id="logFrom" type="date" title="Von">
+        <input id="logTo" type="date" title="Bis">
+        <input id="logSearch" class="span-2" type="search" placeholder="Freitext in Aktion, Grund oder Details">
+        <button id="applyLogFilters" class="btn secondary">Filter anwenden</button>
+        <button id="resetLogFilters" class="btn ghost">Zurücksetzen</button>
+      </div>
+      <div id="logStatus" class="status muted"></div>
+      <div id="logList" class="log-list"></div>
+      <div class="pager">
+        <button id="logPrev" class="btn ghost">← Zurück</button>
+        <span id="logPage" class="muted"></span>
+        <button id="logNext" class="btn ghost">Weiter →</button>
+      </div>
+      </div>
+    </details>
+
+
   </main>
 
   <script src="./admin-core.js"></script>
