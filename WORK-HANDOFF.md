@@ -41,5 +41,6 @@ Do **not** delete the `public.app_assets` table as part of Admin retirement. Aud
 - Activity Log visible.
 - Legacy Vercel project `nap-event-tracker-admin` deleted.
 - Legacy Supabase Edge Function `nap-admin-assets` deleted.
-- Current verified totals after retirement: 4 Vercel projects and 15 Supabase Edge Functions.
+- Immediately after Admin retirement the totals were 4 Vercel projects and 15 Supabase Edge Functions.
+- After the subsequent ScreenImporter legacy retirement, the current verified infrastructure totals are **3 Vercel projects and 12 Supabase Edge Functions**.
 - `public.app_assets` remains in place because it is shared and still has non-Admin dependencies.
