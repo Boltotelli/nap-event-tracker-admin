@@ -32,5 +32,14 @@ GitHub Pages deploys automatically from `main`.
 
 Because there is only one admin user, there is currently no separate test branch/environment requirement. Changes should still be small, reviewed, and reversible.
 
-## Legacy
-The old Vercel project `nap-event-tracker-admin` and Supabase Edge Function `nap-admin-assets` remain untouched until the GitHub Pages Admin is fully verified.
+## Legacy / retirement status
+The old Vercel project `nap-event-tracker-admin` and Supabase Edge Function `nap-admin-assets` are now confirmed as legacy frontend infrastructure.
+
+Audit on 2026-10-02:
+- GitHub Pages deployment from `main` succeeded.
+- Current repository source loads CSS/JS locally and has no runtime dependency on `nap-admin-assets` or `public.app_assets`.
+- The old Vercel HTML still references `nap-admin-assets` for `style`, `js0`, `usage`, `js1`, and `js2`.
+- No `nap-admin-assets` runtime request was observed in the checked seven-day Supabase log window.
+- Final retirement still requires one manual functional check of the GitHub Pages Admin: login, usage/activity/laws loading, and at least one safe admin mutation path.
+
+Important: `public.app_assets` is shared legacy/archive storage and must NOT be dropped when the Admin fallback is retired.
