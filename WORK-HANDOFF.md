@@ -3,44 +3,84 @@
 Last updated: 2026-10-02
 
 ## Current state
-The Admin UI was previously split across:
-- HTML hosted by Vercel project `nap-event-tracker-admin`
-- CSS/JS stored in Supabase `public.app_assets`
-- Edge Function `nap-admin-assets` serving those assets
+The Admin UI now runs as a standalone GitHub Pages application from:
+`Boltotelli/nap-event-tracker-admin`
 
-The current live frontend was copied into this repository without changing admin behavior.
+The previous Vercel / Supabase app-assets delivery path is retired.
 
-## Imported live assets
-- `admin_live_css_v3` -> `styles.css`
-- `admin_live_js0_v3` -> `admin-core.js`
-- `admin_live_usage_v3` -> `admin-usage.js`
-- `admin_live_js1_v3` -> `admin-laws.js`
-- `admin_live_js2_v3` -> `admin-bootstrap.js`
+## Rebuild completed 2026-10-02
+The Admin Center was redesigned to match the visual language of the main NAP Tracker more closely and simplified around operational tasks.
 
-`index.html` is the current live Vercel HTML with only the asset references changed from the Supabase Edge Function to local repository files.
+### Current modules
+- Dashboard / alliance overview
+- Account control
+- Full audit log
+- Support Center
+
+### Removed from Admin UI
+- NAP Laws editor
+- legacy inline usage/activity extension modules
+- “create alliance” card from the primary workflow
+
+The old files `admin-laws.js` and `admin-usage.js` were removed after the rebuild.
+
+## Backend additions
+New admin-only Supabase RPCs:
+- `get_admin_accounts()`
+- `admin_set_account_locked(text, boolean)`
+- `get_admin_activity_log(...)`
+- `get_admin_support_tickets(...)`
+- `get_admin_support_ticket_messages(uuid)`
+- `get_admin_support_ticket_evidence(uuid)`
+- `admin_set_support_ticket_status(uuid, text)`
+
+All functions check `public.is_admin_user()`.
+
+A Storage SELECT policy named `support evidence read admin` allows authenticated admin users to read screenshots from the existing `support-evidence` bucket. The normal alliance-scoped Storage policy remains unchanged.
+
+## Support model
+The regular NAP app remains privacy-scoped:
+- `get_my_support_tickets`
+- `get_my_support_ticket_messages`
+- `get_my_support_ticket_evidence`
+
+Those functions were not weakened or converted into global endpoints.
+
+The Admin Center uses separate admin-only support RPCs to read all tickets.
+
+Existing ticket status values:
+- `new`
+- `reviewing`
+- `awaiting_user`
+- `resolved`
+
+## Account locking
+Alliance account lock state uses `auth.users.banned_until`.
+
+When an account is locked, existing rows in `auth.sessions` for that user are removed and the change is written to `public.audit_log`.
+
+Password resets and account lock/unlock operations are audit logged.
+
+## Logs
+The new `get_admin_activity_log` endpoint supports:
+- alliance
+- category
+- action
+- entity type
+- UTC from/to date
+- free text
+- pagination
+
+The Admin UI displays full audit detail JSON instead of only a shortened summary.
 
 ## Safety
-Do not expose the Supabase service-role key. The frontend uses the existing publishable key and authenticated admin RPCs.
+- Never expose the Supabase service-role key.
+- Do not weaken the alliance-scoped support RPCs.
+- Do not bypass `is_admin_user()` in Admin RPCs.
+- Keep GitHub as the source of truth for frontend code.
+- Do not delete `public.app_assets` as part of Admin cleanup.
 
-The Vercel Admin project and `nap-admin-assets` Edge Function were retired on 2026-10-02 after the GitHub Pages Admin passed the final functional check.
-
-Do **not** delete the `public.app_assets` table as part of Admin retirement. Audit on 2026-10-02 found 49 rows in the table, only 6 of which are `admin_live_*` assets. Other NAP/test/SG snapshots are stored there and `public.get_tracker_bundle()` still reads `tracker_gzip_b64` from this table.
-
-## Audit completed 2026-10-02
-- GitHub Pages deploy from `main`: successful.
-- Current GitHub source: no `nap-admin-assets` reference.
-- Current GitHub source: no `app_assets` dependency.
-- Old Vercel HTML: still loads its five CSS/JS resources from `nap-admin-assets`.
-- Checked seven-day Supabase runtime-log window: 0 requests to `nap-admin-assets`.
-- No cron job references `nap-admin-assets`.
-
-## Retirement completed 2026-10-02
-- Admin login verified on GitHub Pages.
-- Alliance usage visible.
-- Laws visible.
-- Activity Log visible.
-- Legacy Vercel project `nap-event-tracker-admin` deleted.
-- Legacy Supabase Edge Function `nap-admin-assets` deleted.
-- Immediately after Admin retirement the totals were 4 Vercel projects and 15 Supabase Edge Functions.
-- After the subsequent ScreenImporter legacy retirement, the current verified infrastructure totals are **3 Vercel projects and 12 Supabase Edge Functions**.
-- `public.app_assets` remains in place because it is shared and still has non-Admin dependencies.
+## Legacy retirement already completed
+- old Vercel Admin project deleted
+- `nap-admin-assets` Edge Function deleted
+- GitHub Pages Admin verified before retirement
