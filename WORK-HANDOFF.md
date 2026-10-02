@@ -22,7 +22,7 @@ The current live frontend was copied into this repository without changing admin
 ## Safety
 Do not expose the Supabase service-role key. The frontend uses the existing publishable key and authenticated admin RPCs.
 
-The Vercel Admin project and `nap-admin-assets` Edge Function are retirement candidates, but should remain until the final functional check below is completed.
+The Vercel Admin project and `nap-admin-assets` Edge Function were retired on 2026-10-02 after the GitHub Pages Admin passed the final functional check.
 
 Do **not** delete the `public.app_assets` table as part of Admin retirement. Audit on 2026-10-02 found 49 rows in the table, only 6 of which are `admin_live_*` assets. Other NAP/test/SG snapshots are stored there and `public.get_tracker_bundle()` still reads `tracker_gzip_b64` from this table.
 
@@ -34,12 +34,12 @@ Do **not** delete the `public.app_assets` table as part of Admin retirement. Aud
 - Checked seven-day Supabase runtime-log window: 0 requests to `nap-admin-assets`.
 - No cron job references `nap-admin-assets`.
 
-## Final verification before retirement
-1. Admin login works on GitHub Pages.
-2. Alliance usage loads.
-3. Laws load.
-4. Activity log loads.
-5. One safe admin mutation path is confirmed (for example a non-destructive law/password workflow if appropriate).
-6. Then retire the Vercel Admin project.
-7. After Vercel retirement, remove `nap-admin-assets` in a separate archived Supabase cleanup step.
-8. Keep `public.app_assets` unless a separate table-wide dependency audit proves it can be retired.
+## Retirement completed 2026-10-02
+- Admin login verified on GitHub Pages.
+- Alliance usage visible.
+- Laws visible.
+- Activity Log visible.
+- Legacy Vercel project `nap-event-tracker-admin` deleted.
+- Legacy Supabase Edge Function `nap-admin-assets` deleted.
+- Current verified totals after retirement: 4 Vercel projects and 15 Supabase Edge Functions.
+- `public.app_assets` remains in place because it is shared and still has non-Admin dependencies.
