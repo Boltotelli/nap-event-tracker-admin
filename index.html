@@ -1,7 +1,155 @@
-<!doctype html><html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>NAP Admin</title><link rel="stylesheet" href="./styles.css"></head><body><div class="w">
-<section id="login" class="card" style="max-width:430px;margin:8vh auto"><h1>NAP Event Tracker · Admin</h1><div class="muted">Stabiler Direktzugang</div><form id="lf" class="grid" style="margin-top:16px"><input id="pw" type="password" placeholder="Admin-Passwort" required><button class="p">Anmelden</button><div id="ls" class="status muted"></div></form></section>
-<section id="app" class="hide"><div class="top"><div><h1>NAP Admin</h1><div class="muted">Allianzen & NAP Laws</div></div><button id="out" class="g">Abmelden</button></div><div id="kpis" class="kpis" style="margin-top:14px"></div><section class="card" style="padding:12px"><div class="top"><div><h3 style="margin:0">App-Nutzung</h3><div class="muted" style="font-size:12px">Nutzung & aktive Verstöße je Allianz</div></div><button id="quickReload" class="g" style="padding:7px 9px">↻</button></div><div id="quick" class="quick"></div></section>
-<section class="card"><div class="top"><div><h2>Allianzen</h2><div class="muted">Nutzung und Zugänge</div></div><button id="reload" class="s">Aktualisieren</button></div><div id="alist" class="grid" style="margin-top:12px"></div></section>
-<section class="card"><h2>Neue Allianz</h2><div class="g2" style="margin-top:12px"><input id="code" maxlength="12" placeholder="Tag, z. B. ABC"><input id="newpw" type="password" placeholder="Startpasswort"></div><div class="row" style="margin-top:8px"><button id="gen" class="s">Passwort generieren</button><button id="copynew" class="g">Kopieren</button><button id="create" class="p">Allianz anlegen</button></div><div id="cs" class="status muted"></div></section>
-<section class="card"><div class="top"><div><h2>NAP Laws</h2><div class="muted">Versionieren, übersetzen und veröffentlichen</div></div><div class="lawbar"><button id="newLaw" class="s">＋ Neue Law</button><button id="lawsReload" class="g">Aktualisieren</button></div></div><div id="lawsStatus" class="status muted"></div><div id="laws" style="margin-top:8px"></div><div id="lawEditor"></div></section>
-</section></div><script src="./admin-core.js"></script><script src="./admin-usage.js"></script><script src="./admin-laws.js"></script><script src="./admin-bootstrap.js"></script></body></html>
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>NAP Admin Center</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <div id="login" class="login-screen">
+    <form id="lf" class="login-card">
+      <div class="eyebrow">KINGSHOT · SERVER 1044</div>
+      <h1>NAP Admin Center</h1>
+      <p>Geschützter Verwaltungszugang für den NAP Event Tracker.</p>
+      <label>Admin-Passwort<input id="pw" type="password" autocomplete="current-password" required></label>
+      <button class="btn primary" type="submit">Anmelden</button>
+      <div id="ls" class="status muted"></div>
+    </form>
+  </div>
+
+  <main id="app" class="app hide">
+    <header class="app-header">
+      <div>
+        <div class="eyebrow">NAP EVENT TRACKER</div>
+        <h1>Admin Center</h1>
+        <p>Konten, Aktivität und Support zentral verwalten.</p>
+      </div>
+      <div class="header-actions">
+        <button id="reloadAll" class="btn ghost">↻ Aktualisieren</button>
+        <button id="out" class="btn ghost">Abmelden</button>
+      </div>
+    </header>
+
+    <section class="hero-grid">
+      <article class="panel overview-panel">
+        <div class="panel-head">
+          <div>
+            <span class="section-kicker">ÜBERSICHT</span>
+            <h2>Last Logins + Active Violations</h2>
+          </div>
+        </div>
+        <div id="kpis" class="kpi-grid"></div>
+        <div id="allianceOverview" class="alliance-grid"></div>
+      </article>
+
+      <article class="panel account-panel">
+        <div class="panel-head">
+          <div>
+            <span class="section-kicker">ACCOUNT CONTROL</span>
+            <h2>Login verwalten</h2>
+          </div>
+        </div>
+        <label class="field">Login auswählen
+          <select id="accountSelect"></select>
+        </label>
+        <div id="accountMeta" class="account-meta"></div>
+        <div class="field-group">
+          <label class="field">Neues Passwort
+            <input id="accountPassword" type="password" placeholder="Mindestens 10 Zeichen">
+          </label>
+          <div class="button-row">
+            <button id="genPassword" class="btn secondary">Generieren</button>
+            <button id="copyPassword" class="btn ghost">Kopieren</button>
+            <button id="setPassword" class="btn primary">Passwort setzen</button>
+          </div>
+        </div>
+        <div class="divider"></div>
+        <button id="toggleLock" class="btn danger wide">Account sperren</button>
+        <div id="accountStatus" class="status muted"></div>
+      </article>
+    </section>
+
+    <section class="panel">
+      <div class="panel-head">
+        <div>
+          <span class="section-kicker">AUDIT</span>
+          <h2>Logs</h2>
+          <p>Vollständige Systemaktivität mit serverseitigen Filtern.</p>
+        </div>
+        <button id="logsReload" class="btn ghost">↻</button>
+      </div>
+      <div class="filter-grid">
+        <select id="logAlliance"><option value="all">Alle Allianzen</option></select>
+        <select id="logCategory">
+          <option value="all">Alle Kategorien</option>
+          <option value="uploads">Uploads / Imports</option>
+          <option value="players">Spieler / Transfers</option>
+          <option value="events">Events / Settings</option>
+          <option value="violations">Verstöße / Sanktionen</option>
+          <option value="deleted">Löschungen</option>
+          <option value="accounts">Accounts</option>
+          <option value="support">Support</option>
+        </select>
+        <select id="logAction"><option value="all">Alle Aktionen</option></select>
+        <select id="logEntity"><option value="all">Alle Objekte</option></select>
+        <input id="logFrom" type="date" title="Von">
+        <input id="logTo" type="date" title="Bis">
+        <input id="logSearch" class="span-2" type="search" placeholder="Freitext in Aktion, Grund oder Details">
+        <button id="applyLogFilters" class="btn secondary">Filter anwenden</button>
+        <button id="resetLogFilters" class="btn ghost">Zurücksetzen</button>
+      </div>
+      <div id="logStatus" class="status muted"></div>
+      <div id="logList" class="log-list"></div>
+      <div class="pager">
+        <button id="logPrev" class="btn ghost">← Zurück</button>
+        <span id="logPage" class="muted"></span>
+        <button id="logNext" class="btn ghost">Weiter →</button>
+      </div>
+    </section>
+
+    <details class="panel support-panel" id="supportPanel">
+      <summary>
+        <div>
+          <span class="section-kicker">SUPPORT</span>
+          <h2>Support Center</h2>
+          <p>Tickets, Chatverlauf und Screenshots aus der NAP App.</p>
+        </div>
+        <span id="supportOpenBadge" class="badge blue">0 offen</span>
+      </summary>
+      <div class="support-body">
+        <div class="filter-grid support-filters">
+          <select id="supportAlliance"><option value="all">Alle Allianzen</option></select>
+          <select id="supportStatus">
+            <option value="all">Alle Status</option>
+            <option value="new">Neu</option>
+            <option value="reviewing">In Prüfung</option>
+            <option value="awaiting_user">Wartet auf Allianz</option>
+            <option value="resolved">Erledigt</option>
+          </select>
+          <select id="supportCategory">
+            <option value="all">Alle Kategorien</option>
+            <option value="problem">Problem</option>
+            <option value="data">Daten</option>
+            <option value="ui">UI</option>
+            <option value="question">Frage</option>
+            <option value="other">Sonstiges</option>
+          </select>
+          <input id="supportSearch" type="search" placeholder="Betreff suchen">
+          <button id="supportReload" class="btn secondary">Aktualisieren</button>
+        </div>
+        <div id="supportStatusText" class="status muted"></div>
+        <div class="support-layout">
+          <div id="ticketList" class="ticket-list"></div>
+          <div id="ticketDetail" class="ticket-detail empty-state">Ticket auswählen.</div>
+        </div>
+      </div>
+    </details>
+  </main>
+
+  <script src="./admin-core.js"></script>
+  <script src="./admin-logs.js"></script>
+  <script src="./admin-support.js"></script>
+  <script src="./admin-bootstrap.js"></script>
+</body>
+</html>
