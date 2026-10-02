@@ -22,18 +22,24 @@ The current live frontend was copied into this repository without changing admin
 ## Safety
 Do not expose the Supabase service-role key. The frontend uses the existing publishable key and authenticated admin RPCs.
 
-Do not remove:
-- Vercel Admin project
-- `nap-admin-assets` Edge Function
-- `app_assets` rows
+The Vercel Admin project and `nap-admin-assets` Edge Function are retirement candidates, but should remain until the final functional check below is completed.
 
-until the GitHub Pages site has been verified to log in and perform the required admin actions.
+Do **not** delete the `public.app_assets` table as part of Admin retirement. Audit on 2026-10-02 found 49 rows in the table, only 6 of which are `admin_live_*` assets. Other NAP/test/SG snapshots are stored there and `public.get_tracker_bundle()` still reads `tracker_gzip_b64` from this table.
 
-## Next verification
-1. GitHub Pages deploy succeeds.
-2. Admin login works.
-3. Alliance usage loads.
-4. Laws load.
-5. Activity log loads.
-6. Password/alliance/law mutation actions remain available.
-7. Only then retire legacy frontend hosting if desired.
+## Audit completed 2026-10-02
+- GitHub Pages deploy from `main`: successful.
+- Current GitHub source: no `nap-admin-assets` reference.
+- Current GitHub source: no `app_assets` dependency.
+- Old Vercel HTML: still loads its five CSS/JS resources from `nap-admin-assets`.
+- Checked seven-day Supabase runtime-log window: 0 requests to `nap-admin-assets`.
+- No cron job references `nap-admin-assets`.
+
+## Final verification before retirement
+1. Admin login works on GitHub Pages.
+2. Alliance usage loads.
+3. Laws load.
+4. Activity log loads.
+5. One safe admin mutation path is confirmed (for example a non-destructive law/password workflow if appropriate).
+6. Then retire the Vercel Admin project.
+7. After Vercel retirement, remove `nap-admin-assets` in a separate archived Supabase cleanup step.
+8. Keep `public.app_assets` unless a separate table-wide dependency audit proves it can be retired.
