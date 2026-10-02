@@ -1,0 +1,56 @@
+name: NAP Admin — GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: nap-admin-pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate static admin
+        shell: bash
+        run: |
+          test -s index.html
+          test -s styles.css
+          test -s admin-core.js
+          test -s admin-usage.js
+          test -s admin-laws.js
+          test -s admin-bootstrap.js
+
+      - name: Prepare Pages artifact
+        shell: bash
+        run: |
+          mkdir -p "$RUNNER_TEMP/admin-site"
+          cp index.html styles.css admin-core.js admin-usage.js admin-laws.js admin-bootstrap.js "$RUNNER_TEMP/admin-site/"
+          touch "$RUNNER_TEMP/admin-site/.nojekyll"
+
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+        with:
+          enablement: true
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: ${{ runner.temp }}/admin-site
+
+      - name: Deploy
+        id: deployment
+        uses: actions/deploy-pages@v4
